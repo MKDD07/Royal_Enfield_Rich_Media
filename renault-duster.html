@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renault Kiger Showcase</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        overflow-x: hidden;
+      }
+
+      .section {
+        margin: 0 auto;
+        background: #000;
+        width: 100%;
+        max-width: 650px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 0.8s ease-in;
+      }
+
+      .section.loaded {
+        opacity: 1;
+      }
+
+      /* Video Hero Section */
+      .hero-video-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+      }
+
+      .hero-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .hero-text {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%) scale(5);
+        color: white;
+        text-align: center;
+        opacity: 0;
+        animation: zoomFade 3s ease-out 1s forwards;
+        pointer-events: none;
+      }
+
+      .hero-brand {
+        top: 15%;
+        font-size: 36px;
+        font-weight: 400;
+      }
+
+      .hero-model {
+        top: 20%;
+        font-size: 96px;
+        font-weight: 600;
+      }
+
+      .gradient-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000 100%);
+        pointer-events: none;
+      }
+
+      @keyframes zoomFade {
+        0% {
+          transform: translateX(-50%) scale(5);
+          opacity: 0;
+        }
+
+        50% {
+          transform: translateX(-50%) scale(1);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateX(-50%) scale(1);
+          opacity: 0;
+        }
+      }
+
+      /* Image Sequence Section */
+      .image-sequence-container {
+        width: 100%;
+        height: 480px;
+        position: relative;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .sequence-image {
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: opacity 0.8s ease;
+      }
+
+      .animated-text {
+        position: absolute;
+        top: 4%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 36px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: transparent;
+        background: linear-gradient(to right, white 50%, rgba(255, 255, 255, 0.2) 50%);
+        background-size: 200% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      @keyframes textFill {
+        from {
+          background-position: 100% 0;
+        }
+
+        to {
+          background-position: 0 0;
+        }
+      }
+
+      /* Interactive Image Controls */
+      .image-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+        width: 80%;
+      }
+
+      .image-controls.visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      .image-controls button:hover {
+        background: #fff;
+        transform: translateY(-2px);
+      }
+
+      .image-controls button.active {
+        background: #000;
+        color: #fff;
+      }
+
+      /* Carousel Section */
+      .carousel-container {
+        width: 100%;
+        max-width: 650px;
+        margin: 40px auto 10px;
+        position: relative;
+        min-height: 400px;
+      }
+
+      .slick-slider {
+        position: relative;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .slick-slider.slick-initialized {
+        opacity: 1;
+      }
+
+      .slick-slide {
+        outline: none;
+        margin: 0 15px;
+      }
+
+      .slick-slide > div {
+        position: relative;
+      }
+
+      .slide-base-image {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: block;
+        position: relative;
+      }
+
+      .slide-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 500px;
+        height: 400px;
+        opacity: 0;
+        animation: none;
+      }
+
+      .slide-overlay img {
+        width: auto;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: block;
+        margin: 0 auto;
+        mix-blend-mode: luminosity;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Custom Arrow Styles */
+      .slick-prev,
+      .slick-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 36px;
+        height: 36px;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.75;
+        transition: opacity 0.3s ease;
+        border: none;
+      }
+
+      .slick-prev:hover,
+      .slick-next:hover {
+        opacity: 1;
+      }
+
+      .slick-prev {
+        left: 10px;
+      }
+
+      .slick-next {
+        right: 10px;
+      }
+
+      .slick-prev::before,
+      .slick-next::before {
+        content: '';
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-top: 2px solid #000;
+        border-right: 2px solid #000;
+      }
+
+      .slick-prev::before {
+        transform: rotate(-135deg);
+        margin-left: 3px;
+      }
+
+      .slick-next::before {
+        transform: rotate(45deg);
+        margin-right: 3px;
+      }
+
+      /* Custom Dots Styles */
+      .slick-dots {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+        padding: 0;
+        margin: 15px 0 0 0;
+      }
+
+      .slick-dots li {
+        margin: 0;
+        padding: 0;
+      }
+
+      .slick-dots li button {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        border: none;
+        cursor: pointer;
+        font-size: 0;
+        padding: 0;
+        transition: background 0.3s ease;
+      }
+
+      .slick-dots li.slick-active button {
+        background: white;
+      }
+
+      /* CTA Button */
+      .cta-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        background: #000;
+        border: 1px solid #fff;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        margin: 20px auto;
+        transition: all 0.3s ease;
+      }
+
+      .cta-button:hover {
+        background: #fff;
+        color: #000;
+        border: 2px solid #fff;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 576px) {
+        .section {
+          height: 100vh;
+          height: 100dvh;
+        }
+
+        .hero-video {
+          height: 250px;
+          object-position: right center;
+        }
+
+        .hero-brand {
+          font-size: 24px;
+        }
+
+        .sequence-image {
+          margin-top: 20px;
+        }
+
+        .hero-model {
+          font-size: 64px;
+        }
+
+        .image-sequence-container {
+          height: 400px;
+        }
+
+        .animated-text {
+          font-size: 24px;
+        }
+
+        .carousel-container {
+          margin: 20px auto 10px;
+          min-height: 250px;
+        }
+
+        .slide-base-image {
+          height: auto;
+          max-height: 300px;
+          object-fit: contain;
+        }
+
+        .slide-overlay img {
+          height: auto;
+          max-height: 200px;
+          margin: 0;
+        }
+
+        .cta-button {
+          margin: 10px auto;
+          font-size: 14px;
+          padding: 8px 16px;
+        }
+
+        .image-controls {
+          bottom: 10px;
+          flex-wrap: wrap;
+          width: 90%;
+          justify-content: center;
+        }
+
+        .image-controls button {
+          padding: 6px 12px;
+          font-size: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="section" style="position: relative;">
+      <span>
+        <img src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/Renault_2021_Text_1.png?v=1765212013" alt="" style="width: 60px; position: absolute; top: 20px; z-index: 9999; right: 20px;">
+      </span>
+      <!-- Hero Video Section -->
+      <div class="hero-video-container">
+        <video class="hero-video" autoplay loop muted playsinline>
+          <source src="https://cdn.group.renault.com/ren/in/new-duster/RENAULT%20DUSTER%20CAMO_v21%20CLEAN%201280x720.mp4.asset.mp4/db2922e070.mp4" type="video/mp4">
+        </video>
+        <span class="hero-text hero-brand">RENAULT</span>
+        <span class="hero-text hero-model">DUSTER</span>
+        <span class="gradient-overlay"></span>
+      </div>
+      <!-- Image Sequence Section -->
+      <div class="image-sequence-container">
+        <span class="animated-text" id="animatedText">Specification</span>
+        <img id="img1" class="sequence-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/generation-dcad8384-5454-4985-b6eb-3d6aff6b2a30.png?v=1768834669" alt="Image 1">
+        <img id="img2" class="sequence-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/Untitled.png?v=1768835024" alt="Image 2">
+        <img id="img3" class="sequence-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/0000132_3759361f-86ef-4ddc-a995-de754242bb29.png?v=1765205388" alt="Image 3">
+        <img id="img4" class="sequence-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/2.png?v=1768834021" alt="Image 4">
+        <div class="image-controls" id="imageControls">
+          <button onclick="changeImg(0)" class="active cta-button">Aqua Blue</button>
+          <button onclick="changeImg(1)" class="cta-button">Neon Rust</button>
+          <button onclick="changeImg(2)" class="cta-button">Solar Flame</button>
+          <button onclick="changeImg(3)" class="cta-button">Viper Green</button>
+        </div>
+      </div>
+      <!-- Carousel Section -->
+      <div class="carousel-container">
+        <div class="slick-slider">
+          <div style="position: relative; margin: 0 15px;">
+            <img class="slide-base-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/generation-f71358b9-0635-495c-81aa-57850f6621e1.png?v=1768833465" alt="Slide 1">
+            <span class="slide-overlay">
+              <img src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/Frame_224.png?v=1765208219" alt="Overlay 1">
+            </span>
+          </div>
+          <div style="position: relative; margin: 0 15px;">
+            <img class="slide-base-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/generation-a0917c60-cc49-4aab-af68-f38381cae95e.png?v=1768833619" alt="Slide 2">
+            <span class="slide-overlay">
+              <img src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/Frame_224_505d32c0-5078-46ee-821e-3b86a98dc326.png?v=1765208324" alt="Overlay 2">
+            </span>
+          </div>
+          <div style="position: relative; margin: 0 15px;">
+            <img class="slide-base-image" src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/generation-09c33ab7-419f-48fa-8d8e-e7f2bbf358e4_1.png?v=1768833368" alt="Slide 3">
+            <span class="slide-overlay">
+              <img src="https://cdn.shopify.com/s/files/1/0781/5148/3632/files/Frame_223_a71923a0-da7e-42b2-990a-a97032815216.png?v=1765208324" alt="Overlay 3">
+            </span>
+          </div>
+        </div>
+      </div>
+      <a class="cta-button" href="https://adomantra.com/ads/RE_Mob1/Carousel.html">KNOW MORE</a>
+    </section>
+    <script>
+      // Image sequence animation
+      const images = [
+        'https://cdn.shopify.com/s/files/1/0781/5148/3632/files/23.png?v=1768834020',
+        'https://cdn.shopify.com/s/files/1/0781/5148/3632/files/generation-edc5bbb9-edfc-436d-a77a-72b57683f98b.png?v=1768834021',
+        'https://cdn.shopify.com/s/files/1/0781/5148/3632/files/3.png?v=1768834020',
+        'https://cdn.shopify.com/s/files/1/0781/5148/3632/files/2.png?v=1768834021'
+      ];
+
+      let currentImageIndex = 0;
+
+      // Animated text sequence
+      const text = document.getElementById('animatedText');
+      setTimeout(() => {
+        text.style.opacity = '1';
+        text.style.animation = 'textFill 2s ease forwards';
+      }, 3500);
+      setTimeout(() => {
+        text.style.transition = 'opacity 0.5s ease';
+        text.style.opacity = '0';
+      }, 6500);
+
+      // Image sequence timeline
+      setTimeout(() => document.getElementById('img1').style.opacity = 1, 2000);
+      setTimeout(() => {
+        document.getElementById('img1').style.opacity = 0;
+        document.getElementById('img2').style.opacity = 1;
+      }, 3000);
+      setTimeout(() => {
+        document.getElementById('img2').style.opacity = 0;
+        document.getElementById('img3').style.opacity = 1;
+      }, 6000);
+      setTimeout(() => {
+        document.getElementById('img3').style.opacity = 0;
+        document.getElementById('img4').style.opacity = 1;
+        document.getElementById('imageControls').classList.add('visible');
+      }, 8000);
+
+      // Interactive image switcher
+      function changeImg(index) {
+        const img = document.getElementById('img4');
+        const buttons = document.querySelectorAll('.image-controls button');
+        currentImageIndex = index;
+        img.style.opacity = 0;
+        buttons.forEach((btn, i) => {
+          btn.classList.toggle('active', i === index);
+        });
+        setTimeout(() => {
+          img.src = images[index];
+          img.style.opacity = 1;
+        }, 300);
+      }
+
+      // Slick carousel initialization
+      jQuery(document).ready(function ($) {
+        const $slider = $('.slick-slider');
+        const $images = $slider.find('img');
+        let imagesLoaded = 0;
+        const totalImages = $images.length;
+
+        setTimeout(() => $('.section').addClass('loaded'), 1000);
+
+        function initSlick() {
+          $slider.slick({
+            infinite: true,
+            speed: 600,
+            centerMode: true,
+            centerPadding: '60px',
+            slidesToShow: 1,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            arrows: true,
+            prevArrow: '<button type="button" class="slick-prev"></button>',
+            nextArrow: '<button type="button" class="slick-next"></button>',
+            appendDots: $('.carousel-container'),
+            adaptiveHeight: false,
+            cssEase: 'ease-in-out',
+            waitForAnimate: false,
+            responsive: [
+              {
+                breakpoint: 768,
+                settings: {
+                  arrows: false,
+                  centerMode: true,
+                  centerPadding: '40px',
+                  slidesToShow: 2
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  arrows: false,
+                  centerMode: true,
+                  centerPadding: '40px',
+                  slidesToShow: 1
+                }
+              }
+            ]
+          });
+
+          $slider.on('beforeChange', function (e, slick, currentSlide, nextSlide) {
+            $(slick.$slides).find('.slide-overlay').css({
+              opacity: '0',
+              animation: 'none'
+            });
+          });
+
+          $slider.on('afterChange', function (e, slick, currentSlide) {
+            const $overlay = $(slick.$slides[currentSlide]).find('.slide-overlay');
+            void $overlay[0].offsetWidth;
+            $overlay.css('animation', 'fadeIn 0.8s ease-in 0.3s forwards');
+          });
+
+          setTimeout(() => {
+            const slick = $slider.slick('getSlick');
+            $(slick.$slides).find('.slide-overlay').css({
+              opacity: '0',
+              animation: 'none'
+            });
+            $(slick.$slides[0]).find('.slide-overlay').css('animation', 'fadeIn 0.8s ease-in 0.5s forwards');
+          }, 50);
+        }
+
+        function imageLoaded() {
+          imagesLoaded++;
+          if (imagesLoaded === totalImages) {
+            initSlick();
+          }
+        }
+
+        $images.each(function () {
+          if (this.complete) {
+            imageLoaded();
+          } else {
+            $(this).on('load', imageLoaded).on('error', imageLoaded);
+          }
+        });
+
+        setTimeout(() => {
+          if (!$slider.hasClass('slick-initialized')) {
+            initSlick();
+          }
+        }, 3000);
+      });
+
+      // Mobile height adjustment
+      function applyMobileHeight() {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(sec => {
+          if (window.innerWidth <= 576) {
+            sec.style.height = window.innerHeight + 'px';
+          } else {
+            sec.style.height = '';
+          }
+        });
+      }
+      applyMobileHeight();
+      window.addEventListener('resize', applyMobileHeight);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(applyMobileHeight, 100);
+      });
+    </script>
+  </body>
+</html>
